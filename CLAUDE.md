@@ -1,0 +1,26 @@
+# CLAUDE.md
+
+Mastermind: a single-player daily code-breaking puzzle (4 pegs, colours Red/Yellow/Green/Blue, repeats allowed, 10 guesses). Static site, Vite + TypeScript, no framework and no backend.
+
+## Commands
+
+```bash
+npm run dev      # Vite dev server
+npm run verify   # tsc --noEmit + vitest — run before committing
+npm run build    # typecheck + static build to dist/
+```
+
+## Layout
+
+- `src/logic.ts`: all game rules, pure and unit-tested in `tests/logic.test.ts`: `scoreGuess` (black/white pins), `dailyCode(dateKey)` (seeded from the local date, so the same day always gives the same code and nothing is stored), `puzzleNumber` (#1 = `LAUNCH_KEY`, 2026-10-21), challenge tokens (`encodeChallenge`/`decodeChallenge`: 5 base36 chars = 8-bit random salt + scrambled code and guess count + 5-bit checksum), `shareText` (pins only, never colours).
+- `src/storage.ts`: localStorage (`mastermind.*` keys), every access guarded. Guesses per game id (`daily:YYYY-MM-DD`, `challenge:<token>`), daily stats/streak/distribution (`recordDaily` counts each day once).
+- `src/main.ts`: the UI, built with a tiny `h()` helper. Routes by query string: `/` daily, `?c=<token>&from=<name>` a friend's challenge, `?create` make a challenge. Links use `location.origin + pathname`, so they work on github.io and through the thorsteingames.com proxy.
+- Changing `dailyCode`, the hash, or `LAUNCH_KEY` changes past and present daily codes (and breaks shared results); changing the challenge token format breaks links already sent. Don't, unless that's the intent.
+
+## Hosting
+
+`.github/workflows/deploy.yml` publishes `dist/` to GitHub Pages (`https://thorstein-games.github.io/mastermind/`); `vite.config.ts` uses `base: "./"` so the same build works under thorsteingames.com/mastermind once its `_redirects` proxies it.
+
+## Shared Thorstein Games bar and footer
+
+`src/main.ts` loads `https://thorsteingames.com/tg-bar.js` (contract in the thorstein-games-website repo's CLAUDE.md). `index.html` has `<tg-bar game="mastermind">`, a `banner` ad between the game and `<tg-footer>`; the finish screen adds `<tg-more-games>` and a `box` ad (`.finish-ad`) under it. Never put ads on the board or mid-game. The bar is 40px: `style.css` reserves it (`tg-bar:not(:defined)`) and `.app-shell` is `100dvh - 40px`. `VITE_TG_BAR_SRC=""` at build time turns the script off (tests). The id `mastermind` still needs adding to `GAMES` in tg-bar.js, the hub home page, sitemap and `_redirects`.

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Mastermind – Daily Code-Breaking Puzzle | Thorstein Games</title>
+    <meta
+      name="description"
+      content="Crack the secret 4-colour code. A new Mastermind puzzle every day, Wordle-style sharing, and challenge links to stump your friends."
+    />
+    <meta name="theme-color" content="#151a2d" />
+    <meta property="og:title" content="Mastermind – crack the daily code" />
+    <meta
+      property="og:description"
+      content="A new 4-colour code every day. Black pin: right colour, right spot. White pin: right colour, wrong spot."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  </head>
+  <body>
+    <tg-bar game="mastermind"></tg-bar>
+    <div id="app" class="app-shell"></div>
+    <tg-ad game="mastermind" format="banner" class="page-banner"></tg-ad>
+    <tg-footer game="mastermind">
+      <a href="#how-to-play" data-open-help>How to Play</a>
+    </tg-footer>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

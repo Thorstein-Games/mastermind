@@ -1,0 +1,701 @@
+:root {
+  --bg: #151a2d;
+  --bg-2: #1d2440;
+  --board: #232b4d;
+  --board-edge: #2f3963;
+  --text: #eef1ff;
+  --muted: #a3abd1;
+  --accent: #f5c84c;
+  --accent-text: #1a1400;
+  --red: #e5484d;
+  --yellow: #f5d90a;
+  --green: #30a46c;
+  --blue: #3e82f7;
+  --hole: #121731;
+  --radius: 14px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The shared Thorstein Games bar is always 40px; hold its space until tg-bar.js loads. */
+tg-bar:not(:defined) {
+  display: block;
+  height: 40px;
+  background: #0b0b0e;
+}
+
+/* The game fills at least one screen under the bar, so the shared footer starts below the fold. */
+.app-shell {
+  min-height: calc(100dvh - 40px);
+  background: radial-gradient(ellipse at top, #222a4f 0%, var(--bg) 60%);
+}
+
+.page-banner {
+  display: block;
+  margin: 24px auto 0;
+  max-width: 728px;
+  padding: 0 16px;
+}
+
+tg-footer {
+  display: block;
+  margin-top: 24px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.game {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 16px 32px;
+}
+
+/* ---------- Header ---------- */
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0 16px;
+}
+
+.game-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--board-edge);
+  background: var(--bg-2);
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: var(--board);
+}
+
+/* ---------- Layout ---------- */
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 680px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.play-panel,
+.history,
+.card {
+  background: var(--board);
+  border: 1px solid var(--board-edge);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+
+.card {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.center {
+  text-align: center;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+/* ---------- Pegs ---------- */
+
+.peg,
+.slot,
+.swatch {
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.peg {
+  width: 40px;
+  height: 40px;
+  box-shadow:
+    inset -3px -4px 6px rgb(0 0 0 / 0.35),
+    inset 3px 3px 5px rgb(255 255 255 / 0.35);
+}
+
+.peg-sm {
+  width: 26px;
+  height: 26px;
+}
+
+.peg-red,
+.slot.peg-red {
+  background-color: var(--red);
+}
+.peg-yellow,
+.slot.peg-yellow {
+  background-color: var(--yellow);
+}
+.peg-green,
+.slot.peg-green {
+  background-color: var(--green);
+}
+.peg-blue,
+.slot.peg-blue {
+  background-color: var(--blue);
+}
+
+.peg-empty {
+  background: var(--hole);
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.6);
+}
+
+.row-pegs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ---------- Feedback pins (2x2, order carries no meaning) ---------- */
+
+.pins {
+  display: grid;
+  grid-template-columns: repeat(2, 12px);
+  gap: 4px;
+}
+
+.pin {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pin-none {
+  background: rgb(255 255 255 / 0.06);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.5);
+}
+
+.pin-black {
+  background: #000;
+  border: 1px solid #8790c4;
+}
+
+.pin-white {
+  background: #fff;
+  border: 1px solid #fff;
+}
+
+/* ---------- Play panel ---------- */
+
+.play-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.prompt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.slots {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border-radius: 999px;
+  border: 1px solid var(--board-edge);
+}
+
+.slot {
+  width: 54px;
+  height: 54px;
+  border: 0;
+  padding: 0;
+  background: var(--hole);
+  box-shadow: inset 0 3px 6px rgb(0 0 0 / 0.6);
+  transition: transform 0.12s;
+}
+
+.slot[class*="peg-"] {
+  box-shadow:
+    inset -4px -5px 8px rgb(0 0 0 / 0.35),
+    inset 4px 4px 6px rgb(255 255 255 / 0.35);
+  animation: pop 0.15s ease-out;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.7);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(4, 64px);
+  gap: 14px;
+  justify-content: center;
+}
+
+.swatch {
+  width: 64px;
+  height: 64px;
+  border: 3px solid rgb(255 255 255 / 0.15);
+  position: relative;
+  box-shadow:
+    inset -4px -5px 8px rgb(0 0 0 / 0.35),
+    inset 4px 4px 6px rgb(255 255 255 / 0.35),
+    0 4px 10px rgb(0 0 0 / 0.3);
+  transition: transform 0.1s;
+}
+
+.swatch:active {
+  transform: scale(0.92);
+}
+
+.swatch-key {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--bg);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+@media (pointer: coarse) {
+  .swatch-key {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .palette {
+    grid-template-columns: repeat(4, 56px);
+    gap: 10px;
+  }
+  .swatch {
+    width: 56px;
+    height: 56px;
+  }
+  .slot {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  min-height: 44px;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.btn-primary:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--board-edge);
+}
+
+.btn-ghost:not(:disabled):hover {
+  background: var(--bg-2);
+}
+
+.btn-link {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+.status {
+  margin: 0;
+  min-height: 1.2em;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.legend {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+.legend .pin {
+  margin: 0 2px;
+}
+
+/* ---------- Guess history (side section) ---------- */
+
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.history-head h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: var(--bg-2);
+  opacity: 0.55;
+}
+
+.row-done {
+  opacity: 1;
+}
+
+.row-active {
+  opacity: 1;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.row-n {
+  width: 18px;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.row .pins {
+  margin-left: auto;
+}
+
+/* ---------- Result ---------- */
+
+.result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.result h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  outline: none;
+}
+
+.result.won h2 {
+  color: var(--accent);
+}
+
+.result p {
+  margin: 0;
+}
+
+.reveal {
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border-radius: 999px;
+  gap: 10px;
+}
+
+.share-preview {
+  margin: 4px 0;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+.countdown {
+  font-variant-numeric: tabular-nums;
+}
+
+.finish-extras {
+  width: 100%;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.finish-extras tg-more-games {
+  display: block;
+}
+
+/* An ad box needs 300px; keep it clear of the buttons above. */
+.finish-ad {
+  display: block;
+  min-width: 300px;
+  margin: 8px auto 0;
+}
+
+/* ---------- Create ---------- */
+
+.create {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.create p,
+.create h2 {
+  margin: 0;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: auto minmax(0, 200px);
+  gap: 10px 14px;
+  align-items: center;
+  text-align: left;
+}
+
+select,
+input[type="text"] {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--board-edge);
+  border-radius: 10px;
+  padding: 9px 12px;
+  width: 100%;
+}
+
+.challenge-out {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.challenge-out:empty {
+  display: none;
+}
+
+.challenge-out label {
+  font-weight: 600;
+}
+
+.challenge-out p {
+  margin: 0;
+}
+
+/* ---------- Dialogs ---------- */
+
+.modal {
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  background: var(--board);
+  color: var(--text);
+  border: 1px solid var(--board-edge);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+
+.modal::backdrop {
+  background: rgb(5 7 18 / 0.7);
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-head h2 {
+  margin: 0;
+}
+
+.modal p {
+  line-height: 1.5;
+}
+
+.pin-legend {
+  list-style: none;
+  padding: 0;
+  line-height: 2;
+}
+
+.example {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  column-gap: 20px;
+  align-items: center;
+  gap: 8px 14px;
+  background: var(--bg-2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.example p {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0 18px;
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1.6rem;
+}
+
+.stat span {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.modal h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.dist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dist-n {
+  width: 18px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dist-bar {
+  background: var(--board-edge);
+  border-radius: 4px;
+  padding: 1px 6px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-width: 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -19,8 +19,8 @@ npm run build    # typecheck + static build to dist/
 
 ## Hosting
 
-`.github/workflows/deploy.yml` publishes `dist/` to GitHub Pages (`https://thorstein-games.github.io/mastermind/`); `vite.config.ts` uses `base: "./"` so the same build works under thorsteingames.com/mastermind once its `_redirects` proxies it.
+`.github/workflows/deploy.yml` publishes `dist/` to GitHub Pages (`https://thorstein-games.github.io/mastermind/`); thorsteingames.com/mastermind proxies it (`_redirects` in the website repo). `vite.config.ts` sets `base: "/mastermind/"`: keep asset paths absolute, because the proxied page is served without a trailing slash and relative paths would resolve to thorsteingames.com/assets/. The dev server is at `/mastermind/` too.
 
 ## Shared Thorstein Games bar and footer
 
-`src/main.ts` loads `https://thorsteingames.com/tg-bar.js` (contract in the thorstein-games-website repo's CLAUDE.md). `index.html` has `<tg-bar game="mastermind">`, a `banner` ad between the game and `<tg-footer>`; the finish screen adds `<tg-more-games>` and a `box` ad (`.finish-ad`) under it. Never put ads on the board or mid-game. The bar is 40px: `style.css` reserves it (`tg-bar:not(:defined)`) and `.app-shell` is `100dvh - 40px`. `VITE_TG_BAR_SRC=""` at build time turns the script off (tests). The id `mastermind` still needs adding to `GAMES` in tg-bar.js, the hub home page, sitemap and `_redirects`.
+`src/main.ts` loads `https://thorsteingames.com/tg-bar.js` (contract in the thorstein-games-website repo's CLAUDE.md). `index.html` has `<tg-bar game="mastermind">`, a `banner` ad between the game and `<tg-footer>`; the finish screen adds `<tg-more-games>` and a `box` ad (`.finish-ad`) under it. Never put ads on the board or mid-game. The bar is 40px: `style.css` reserves it (`tg-bar:not(:defined)`) and `.app-shell` is `100dvh - 40px`. `VITE_TG_BAR_SRC=""` at build time turns the script off (tests). The hub lists it as id `mastermind` (`GAMES` in tg-bar.js, home page, sitemap, `_redirects`).

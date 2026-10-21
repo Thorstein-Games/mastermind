@@ -1,7 +1,7 @@
 {
   "name": "Mastermind – Thorstein Games",
   "short_name": "Mastermind",
-  "description": "Crack the daily 4-colour code in 10 guesses.",
+  "description": "Crack the daily 4-color code in 10 guesses.",
   "start_url": "/mastermind",
   "scope": "/mastermind",
   "display": "standalone",

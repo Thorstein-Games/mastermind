@@ -52,13 +52,13 @@ describe("daily code", () => {
     expect(codes.size).toBeGreaterThan(45);
   });
 
-  it("only uses the four colours, four pegs", () => {
+  it("only uses the four colors, four pegs", () => {
     const code = dailyCode("2027-01-01");
     expect(code).toHaveLength(4);
     for (const col of code) expect(COLORS).toContain(col);
   });
 
-  it("uses every colour in every position over time", () => {
+  it("uses every color in every position over time", () => {
     const seen = new Set<string>();
     for (let d = 0; d < 200; d++) {
       dailyCode(dateKey(new Date(2026, 9, 21 + d))).forEach((col, i) => seen.add(`${i}:${col}`));
@@ -124,7 +124,7 @@ describe("challenge links", () => {
 });
 
 describe("share text", () => {
-  it("shows pins but never the colours", () => {
+  it("shows pins but never the colors", () => {
     const text = shareText({
       title: "Mastermind #1",
       feedback: [

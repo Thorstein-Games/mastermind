@@ -27,14 +27,14 @@ export const COLOR_EMOJI: Record<Color, string> = {
 };
 
 export interface Feedback {
-  /** Right colour in the right spot. */
+  /** Right color in the right spot. */
   black: number;
-  /** Right colour in the wrong spot (each secret peg counts once). */
+  /** Right color in the wrong spot (each secret peg counts once). */
   white: number;
 }
 
 /**
- * Score a guess against the secret. A colour can only be matched as many
+ * Score a guess against the secret. A color can only be matched as many
  * times as it appears in the secret, and an exact match (black) replaces the
  * white it would otherwise have earned.
  */
@@ -124,7 +124,7 @@ export interface Challenge {
 }
 
 const CHALLENGE_SALT_BITS = 8;
-const CHALLENGE_DATA_BITS = 11; // 8 bits of colours + 3 bits of (guesses - 10)
+const CHALLENGE_DATA_BITS = 11; // 8 bits of colors + 3 bits of (guesses - 10)
 const CHALLENGE_CHECK_BITS = 5;
 
 function challengeMask(salt: number): number {
@@ -144,13 +144,13 @@ function challengeCheck(salt: number, data: number): number {
 export function encodeChallenge(ch: Challenge, salt = Math.floor(Math.random() * 256)): string {
   if (ch.code.length !== CODE_LENGTH) throw new Error("bad code length");
   if (ch.maxGuesses < MIN_GUESSES || ch.maxGuesses > MAX_GUESSES) throw new Error("bad guess count");
-  let colours = 0;
+  let colors = 0;
   for (const c of ch.code) {
     const i = COLORS.indexOf(c);
-    if (i < 0) throw new Error(`bad colour ${c}`);
-    colours = (colours << 2) | i;
+    if (i < 0) throw new Error(`bad color ${c}`);
+    colors = (colors << 2) | i;
   }
-  const data = colours | ((ch.maxGuesses - MIN_GUESSES) << 8);
+  const data = colors | ((ch.maxGuesses - MIN_GUESSES) << 8);
   const s = salt & ((1 << CHALLENGE_SALT_BITS) - 1);
   const packed =
     (((s << CHALLENGE_DATA_BITS) | (data ^ challengeMask(s))) << CHALLENGE_CHECK_BITS) |
@@ -190,7 +190,7 @@ export interface ShareInput {
   url: string;
 }
 
-/** Wordle-style result: only the pegs, never the colours, so it can't spoil the code. */
+/** Wordle-style result: only the pegs, never the colors, so it can't spoil the code. */
 export function shareText({ title, feedback, solved, maxGuesses, url }: ShareInput): string {
   const score = solved ? `${feedback.length}/${maxGuesses}` : `X/${maxGuesses}`;
   const rows = feedback.map(feedbackEmoji).join("\n");

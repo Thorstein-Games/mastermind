@@ -201,7 +201,7 @@ function openHelp(): void {
     h(
       "p",
       {},
-      "Crack the secret code: 4 pegs, each Red, Yellow, Green or Blue. Colours can repeat, so ",
+      "Crack the secret code: 4 pegs, each Red, Yellow, Green or Blue. Colors can repeat, so ",
       h("em", {}, "Blue Blue Green Blue"),
       " is a possible code.",
     ),
@@ -209,13 +209,13 @@ function openHelp(): void {
     h(
       "ul",
       { class: "pin-legend" },
-      h("li", {}, h("span", { class: "pin pin-black" }), " Black: right colour in the right spot."),
-      h("li", {}, h("span", { class: "pin pin-white" }), " White: right colour, wrong spot."),
+      h("li", {}, h("span", { class: "pin pin-black" }), " Black: right color in the right spot."),
+      h("li", {}, h("span", { class: "pin pin-white" }), " White: right color, wrong spot."),
     ),
     h("p", {}, "The pins are in no particular order, so they don't say which peg they mean. Each secret peg counts once."),
     exampleRow(["red", "red", "blue", "green"], { black: 1, white: 1 }, "If the code is Red Yellow Green Yellow: one Red is exact (black), the Green is in the wrong spot (white)."),
     h("p", {}, "A new code every day at midnight. Share your result, or send a friend your own code with ✉️."),
-    h("p", { class: "muted" }, "Keyboard: 1–4 or R/Y/G/B to add a colour, Backspace to remove, Enter to guess."),
+    h("p", { class: "muted" }, "Keyboard: 1–4 or R/Y/G/B to add a color, Backspace to remove, Enter to guess."),
   );
 }
 
@@ -410,7 +410,7 @@ function renderGame(cfg: GameConfig): void {
     );
     const palette = h(
       "div",
-      { class: "palette", "aria-label": "Colours" },
+      { class: "palette", "aria-label": "Colors" },
       ...COLORS.map((c, i) =>
         h(
           "button",
@@ -436,9 +436,9 @@ function renderGame(cfg: GameConfig): void {
         "p",
         { class: "legend muted" },
         h("span", { class: "pin pin-black" }),
-        " right colour & spot  ",
+        " right color & spot  ",
         h("span", { class: "pin pin-white" }),
-        " right colour, wrong spot",
+        " right color, wrong spot",
       ),
     );
   }
@@ -575,7 +575,7 @@ function renderCreate(): void {
       ...code.map((c, i) =>
         h("button", {
           class: `slot peg-${c}`,
-          "aria-label": `Spot ${i + 1}: ${COLOR_LABEL[c]}. Tap to change colour.`,
+          "aria-label": `Spot ${i + 1}: ${COLOR_LABEL[c]}. Tap to change color.`,
           onclick: () => {
             code[i] = COLORS[(COLORS.indexOf(code[i]) + 1) % COLORS.length];
             invalidate();
@@ -631,7 +631,7 @@ function renderCreate(): void {
         "div",
         { class: "card create" },
         h("h2", {}, "Set a secret code"),
-        h("p", { class: "muted" }, "Tap a peg to change its colour. Colours can repeat."),
+        h("p", { class: "muted" }, "Tap a peg to change its color. Colors can repeat."),
         slots,
         h(
           "div",

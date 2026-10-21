@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1200px;height:630px;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#eef1ff;
+ background:radial-gradient(ellipse at 20% 0%,#2c3566 0%,#151a2d 65%);display:flex;align-items:center;padding:0 70px;gap:60px}
+.left{flex:1}
+.brand{font-size:24px;letter-spacing:.18em;text-transform:uppercase;color:#a3abd1;font-weight:600}
+h1{font-size:104px;letter-spacing:.01em;line-height:1;margin:14px 0 18px;font-weight:800}
+.tag{font-size:38px;line-height:1.25;color:#f5c84c;font-weight:700}
+.sub{margin-top:22px;font-size:26px;color:#c3c9ea;line-height:1.4}
+.legend{margin-top:26px;display:flex;gap:28px;font-size:22px;color:#a3abd1;align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:10px}
+.board{background:#232b4d;border:2px solid #2f3963;border-radius:26px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:14px;background:#1d2440;border-radius:16px;padding:10px 16px}
+.peg{width:52px;height:52px;border-radius:50%;box-shadow:inset -5px -6px 9px rgba(0,0,0,.35),inset 5px 5px 7px rgba(255,255,255,.35)}
+.r{background:#e5484d}.y{background:#f5d90a}.g{background:#30a46c}.b{background:#3e82f7}
+.hole{background:#121731;box-shadow:inset 0 3px 6px rgba(0,0,0,.6)}
+.pins{display:grid;grid-template-columns:repeat(2,18px);gap:6px;margin-left:14px}
+.pin{width:18px;height:18px;border-radius:50%}
+.k{background:#000;border:2px solid #8790c4}.w{background:#fff}.n{background:rgba(255,255,255,.07)}
+.secret{outline:3px solid #f5c84c;outline-offset:-3px}
+</style></head><body>
+<div class="left">
+ <div class="brand">Thorstein Games · Daily puzzle</div>
+ <h1>Mastermind</h1>
+ <div class="tag">Crack the secret colour code<br>in 10 guesses.</div>
+ <div class="sub">A new code every day. Share your score,<br>or challenge a friend with your own.</div>
+ <div class="legend"><span><i class="pin k"></i>right colour &amp; spot</span><span><i class="pin w"></i>right colour, wrong spot</span></div>
+</div>
+<div class="board">
+ <div class="row"><i class="peg r"></i><i class="peg r"></i><i class="peg y"></i><i class="peg y"></i><span class="pins"><i class="pin k"></i><i class="pin k"></i><i class="pin n"></i><i class="pin n"></i></span></div>
+ <div class="row"><i class="peg g"></i><i class="peg r"></i><i class="peg b"></i><i class="peg y"></i><span class="pins"><i class="pin k"></i><i class="pin w"></i><i class="pin w"></i><i class="pin w"></i></span></div>
+ <div class="row"><i class="peg b"></i><i class="peg r"></i><i class="peg g"></i><i class="peg y"></i><span class="pins"><i class="pin k"></i><i class="pin k"></i><i class="pin w"></i><i class="pin w"></i></span></div>
+ <div class="row secret"><i class="peg b"></i><i class="peg r"></i><i class="peg y"></i><i class="peg g"></i><span class="pins"><i class="pin k"></i><i class="pin k"></i><i class="pin k"></i><i class="pin k"></i></span></div>
+ <div class="row"><i class="peg hole"></i><i class="peg hole"></i><i class="peg hole"></i><i class="peg hole"></i><span class="pins"><i class="pin n"></i><i class="pin n"></i><i class="pin n"></i><i class="pin n"></i></span></div>
+</div>
+</body></html>

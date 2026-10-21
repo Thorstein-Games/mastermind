@@ -699,3 +699,51 @@ input[type="text"] {
     transition: none !important;
   }
 }
+
+/* ---------- About / FAQ (static text in index.html) ---------- */
+
+.about {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 16px 8px;
+  line-height: 1.6;
+  color: #d3d8f2;
+}
+
+.about h2 {
+  font-size: 1.35rem;
+  color: var(--text);
+  margin: 0 0 12px;
+  scroll-margin-top: 56px;
+}
+
+.about h2 + p {
+  margin-top: 0;
+}
+
+.about h2:not(:first-child) {
+  margin-top: 36px;
+}
+
+.about h3 {
+  font-size: 1.02rem;
+  color: var(--text);
+  margin: 20px 0 4px;
+}
+
+.about h3 + p {
+  margin-top: 0;
+}
+
+.about ul {
+  padding-left: 20px;
+}
+
+.about strong {
+  color: var(--text);
+}
+
+.noscript {
+  padding: 40px 16px;
+  text-align: center;
+}

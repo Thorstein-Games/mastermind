@@ -1,0 +1,15 @@
+{
+  "name": "Mastermind – Thorstein Games",
+  "short_name": "Mastermind",
+  "description": "Crack the daily 4-colour code in 10 guesses.",
+  "start_url": "/mastermind",
+  "scope": "/mastermind",
+  "display": "standalone",
+  "background_color": "#151a2d",
+  "theme_color": "#151a2d",
+  "icons": [
+    { "src": "/mastermind/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/mastermind/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/mastermind/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

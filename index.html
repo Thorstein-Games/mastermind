@@ -3,26 +3,173 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Mastermind – Daily Code-Breaking Puzzle | Thorstein Games</title>
+    <title>Mastermind – Free Daily Code-Breaking Puzzle | Thorstein Games</title>
     <meta
       name="description"
-      content="Crack the secret 4-colour code. A new Mastermind puzzle every day, Wordle-style sharing, and challenge links to stump your friends."
+      content="Play Mastermind free online: crack the secret 4-colour code in 10 guesses. A new code every day, Wordle-style sharing, and custom codes to challenge friends."
     />
+    <meta
+      name="keywords"
+      content="mastermind, mastermind game, mastermind online, daily puzzle, code breaker, codebreaker game, colour code game, logic puzzle, wordle alternative, brain game"
+    />
+    <link rel="canonical" href="https://thorsteingames.com/mastermind" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#151a2d" />
-    <meta property="og:title" content="Mastermind – crack the daily code" />
+    <meta name="author" content="Thorstein Games" />
+
+    <!-- Link previews (iMessage, WhatsApp, Discord, Slack, Facebook, X...) -->
+    <meta property="og:site_name" content="Thorstein Games" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://thorsteingames.com/mastermind" />
+    <meta property="og:title" content="Mastermind – crack the daily colour code" />
     <meta
       property="og:description"
-      content="A new 4-colour code every day. Black pin: right colour, right spot. White pin: right colour, wrong spot."
+      content="A new 4-colour code every day. 10 guesses. Black pin: right colour, right spot. White pin: right colour, wrong spot. Share your score or challenge a friend."
     />
-    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://thorsteingames.com/mastermind/og-image.png" />
+    <meta property="og:image:secure_url" content="https://thorsteingames.com/mastermind/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Mastermind by Thorstein Games: a board of coloured guesses with black and white feedback pins"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mastermind – crack the daily colour code" />
+    <meta
+      name="twitter:description"
+      content="A new 4-colour code every day. 10 guesses. Share your score or challenge a friend."
+    />
+    <meta name="twitter:image" content="https://thorsteingames.com/mastermind/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Mastermind by Thorstein Games: a board of coloured guesses with black and white feedback pins"
+    />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": ["VideoGame", "WebApplication"],
+            "@id": "https://thorsteingames.com/mastermind#game",
+            "name": "Mastermind",
+            "url": "https://thorsteingames.com/mastermind",
+            "image": "https://thorsteingames.com/mastermind/og-image.png",
+            "description": "A free daily code-breaking puzzle. Crack the secret 4-colour code in 10 guesses using black and white feedback pins, share your score, or set a code to challenge a friend.",
+            "genre": ["Puzzle", "Logic", "Daily puzzle"],
+            "gamePlatform": "Web browser",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Any",
+            "playMode": "SinglePlayer",
+            "numberOfPlayers": { "@type": "QuantitativeValue", "value": 1 },
+            "isAccessibleForFree": true,
+            "inLanguage": "en",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "publisher": { "@id": "https://thorsteingames.com/#organization" },
+            "isPartOf": { "@id": "https://thorsteingames.com/#website" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://thorsteingames.com/#organization",
+            "name": "Thorstein Games",
+            "url": "https://thorsteingames.com",
+            "logo": "https://thorsteingames.com/logo.png"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Thorstein Games", "item": "https://thorsteingames.com" },
+              { "@type": "ListItem", "position": 2, "name": "Mastermind", "item": "https://thorsteingames.com/mastermind" }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do you play Mastermind?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Guess the secret code: 4 pegs, each red, yellow, green or blue. After each guess, a black pin means a right colour in the right spot and a white pin means a right colour in the wrong spot. Crack the code within 10 guesses." }
+              },
+              {
+                "@type": "Question",
+                "name": "Can colours repeat in the code?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Any arrangement is possible, such as blue blue green blue, so there are 256 possible codes." }
+              },
+              {
+                "@type": "Question",
+                "name": "When is there a new Mastermind code?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Every day at midnight, local time. Everyone gets the same code on the same day." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I challenge a friend?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Tap the envelope button, set your own secret code and choose 10 to 15 guesses, then send the link. The code is scrambled in the link so your friend can't peek." }
+              },
+              {
+                "@type": "Question",
+                "name": "Is Mastermind free?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. It's free in any browser on phone, tablet or computer, with no download or account." }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <tg-bar game="mastermind"></tg-bar>
-    <div id="app" class="app-shell"></div>
+    <div id="app" class="app-shell">
+      <noscript><p class="noscript">Mastermind needs JavaScript to play.</p></noscript>
+    </div>
+
+    <!-- Plain text about the game, for players who scroll and for search engines. -->
+    <section class="about" id="how-to-play" aria-labelledby="about-title">
+      <h2 id="about-title">How to play Mastermind</h2>
+      <p>
+        Mastermind is a classic code-breaking puzzle. The computer hides a secret code of
+        <strong>4 coloured pegs</strong>, each <strong>red, yellow, green or blue</strong>.
+        Colours can repeat, so <em>blue blue green blue</em> is a valid code. You have
+        <strong>10 guesses</strong> to crack it.
+      </p>
+      <p>After every guess, pins next to it tell you how close you are:</p>
+      <ul>
+        <li><strong>Black pin:</strong> one of your pegs is the right colour in the right spot.</li>
+        <li><strong>White pin:</strong> one of your pegs is the right colour, but in the wrong spot.</li>
+      </ul>
+      <p>
+        The pins come in no particular order, so they don't say which peg they mean, and each
+        secret peg is counted once. Use what each guess rules out to narrow down the code.
+      </p>
+
+      <h2 id="faq">Mastermind FAQ</h2>
+      <h3>When is there a new code?</h3>
+      <p>Every day at midnight, your local time. Everyone gets the same daily code, so you can compare scores.</p>
+      <h3>How do I share my result?</h3>
+      <p>
+        When you finish, tap <strong>Share result</strong>. Like Wordle, it shares only your pins, never
+        the colours, so it won't spoil the code for anyone else.
+      </p>
+      <h3>How do I challenge a friend?</h3>
+      <p>
+        Tap the ✉️ button, set your own secret code, pick 10 to 15 guesses and send the link. The code
+        is scrambled in the link, so your friend can't peek at it.
+      </p>
+      <h3>Is it free?</h3>
+      <p>Yes. Play free in any browser on your phone, tablet or computer. No download or account needed.</p>
+    </section>
+
     <tg-ad game="mastermind" format="banner" class="page-banner"></tg-ad>
     <tg-footer game="mastermind">
-      <a href="#how-to-play" data-open-help>How to Play</a>
+      <a href="#how-to-play">How to Play</a>
+      <a href="#faq">FAQ</a>
     </tg-footer>
     <script type="module" src="./src/main.ts"></script>
   </body>

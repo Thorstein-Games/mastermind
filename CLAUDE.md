@@ -24,3 +24,7 @@ npm run build    # typecheck + static build to dist/
 ## Shared Thorstein Games bar and footer
 
 `src/main.ts` loads `https://thorsteingames.com/tg-bar.js` (contract in the thorstein-games-website repo's CLAUDE.md). `index.html` has `<tg-bar game="mastermind">`, a `banner` ad between the game and `<tg-footer>`; the finish screen adds `<tg-more-games>` and a `box` ad (`.finish-ad`) under it. Never put ads on the board or mid-game. The bar is 40px: `style.css` reserves it (`tg-bar:not(:defined)`) and `.app-shell` is `100dvh - 40px`. `VITE_TG_BAR_SRC=""` at build time turns the script off (tests). The hub lists it as id `mastermind` (`GAMES` in tg-bar.js, home page, sitemap, `_redirects`).
+
+## SEO and link previews
+
+All in `index.html`: title/description, canonical `https://thorsteingames.com/mastermind` (challenge and `?create` URLs point to it), Open Graph + Twitter tags, JSON-LD (`VideoGame`, `BreadcrumbList`, and an `FAQPage` that must match the visible FAQ), and a static "How to play" / FAQ section below the game that the footer links jump to (`#how-to-play`, `#faq`; the router ignores hash-only changes). Social/OG URLs are absolute on thorsteingames.com. `public/og-image.png` (1200×630) is a screenshot of `scripts/og-image.html` at that viewport; edit the HTML and re-render it if the look changes, keeping its pins correct for the code shown. `public/sitemap.xml` is listed in the hub's `robots.ts`.

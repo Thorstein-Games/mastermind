@@ -93,15 +93,21 @@ function go(search: string): void {
   route();
 }
 
-window.addEventListener("popstate", route);
+// Only a change of query string is a new screen; a #hash change is just an
+// in-page jump (the footer's How to Play / FAQ links).
+let routedSearch: string | null = null;
+window.addEventListener("popstate", () => {
+  if (location.search !== routedSearch) route();
+});
 
 let cleanup: (() => void) | null = null;
 
 function route(): void {
   cleanup?.();
   cleanup = null;
+  routedSearch = location.search;
   const p = new URLSearchParams(location.search);
-  window.scrollTo(0, 0);
+  if (!location.hash) window.scrollTo(0, 0);
   if (p.has("create")) return renderCreate();
   const token = p.get("c");
   if (token !== null) {

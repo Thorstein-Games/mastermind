@@ -27,6 +27,8 @@ body {
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  /* No double-tap zoom (iOS zooms when a peg is tapped twice quickly); pinch zoom still works. */
+  touch-action: manipulation;
 }
 
 /* The shared Thorstein Games bar is always 40px; hold its space until tg-bar.js loads. */
@@ -58,6 +60,7 @@ button {
   font: inherit;
   color: inherit;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 button:focus-visible,

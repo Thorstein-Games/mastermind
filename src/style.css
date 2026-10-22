@@ -92,6 +92,11 @@ input:focus-visible {
   letter-spacing: 0.04em;
 }
 
+.game-header h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .subtitle {
   margin: 2px 0 0;
   color: var(--muted);
@@ -118,6 +123,39 @@ input:focus-visible {
 
 .icon-btn:hover {
   background: var(--board);
+}
+
+/* Four header icons and the title share one line, even on a 320px phone. */
+@media (max-width: 400px) {
+  .game-header h1 {
+    font-size: 1.35rem;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .header-actions .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 360px) {
+  .game-header h1 {
+    font-size: 1.2rem;
+  }
+  .header-actions {
+    gap: 4px;
+  }
+  .header-actions .icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+.inline-icon {
+  display: inline-flex;
+  vertical-align: -4px;
+  color: var(--accent);
 }
 
 /* ---------- Layout ---------- */

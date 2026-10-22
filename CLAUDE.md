@@ -14,7 +14,7 @@ npm run build    # typecheck + static build to dist/
 
 - `src/logic.ts`: all game rules, pure and unit-tested in `tests/logic.test.ts`: `scoreGuess` (black/white pins), `dailyCode(dateKey)` (seeded from the local date, so the same day always gives the same code and nothing is stored), `puzzleNumber` (#1 = `LAUNCH_KEY`, 2026-10-21), challenge tokens (`encodeChallenge`/`decodeChallenge`: 5 base36 chars = 8-bit random salt + scrambled code and guess count + 5-bit checksum), `shareText` (pins only, never colors).
 - `src/storage.ts`: localStorage (`mastermind.*` keys), every access guarded. Guesses per game id (`daily:YYYY-MM-DD`, `challenge:<token>`), daily stats/streak/distribution (`recordDaily` counts each day once).
-- `src/main.ts`: the UI, built with a tiny `h()` helper. Routes by query string: `/` daily, `?c=<token>&from=<name>` a friend's challenge, `?create` make a challenge. Links use `location.origin + pathname`, so they work on github.io and through the thorsteingames.com proxy.
+- `src/main.ts`: the UI, built with a tiny `h()` helper. Routes by query string: `/` daily, `?c=<token>&from=<name>` a friend's challenge, `?create` make a challenge, `?practice` random codes (`loadPracticeCode`/`newPracticeCode` in storage; no stats). Header icons are inline SVGs in `ICONS`. Links use `location.origin + pathname`, so they work on github.io and through the thorsteingames.com proxy.
 - Changing `dailyCode`, the hash, or `LAUNCH_KEY` changes past and present daily codes (and breaks shared results); changing the challenge token format breaks links already sent. Don't, unless that's the intent.
 
 ## Hosting

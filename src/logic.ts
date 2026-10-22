@@ -116,6 +116,11 @@ export function dailyCode(key: string): Code {
   return Array.from({ length: CODE_LENGTH }, () => COLORS[Math.floor(rand() * COLORS.length)]);
 }
 
+/** A random code, for practice games. */
+export function randomCode(rand: () => number = Math.random): Code {
+  return Array.from({ length: CODE_LENGTH }, () => COLORS[Math.floor(rand() * COLORS.length)]);
+}
+
 // ---------- Challenge links ----------
 
 export interface Challenge {

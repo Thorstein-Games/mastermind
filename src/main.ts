@@ -26,6 +26,9 @@ import {
   markHelpSeen,
   recordDaily,
   saveGuesses,
+  PRACTICE_ID,
+  loadPracticeCode,
+  newPracticeCode,
 } from "./storage";
 
 // ---------- Shared Thorstein Games bar ----------
@@ -79,17 +82,34 @@ function feedbackPins(fb: Feedback | null): HTMLElement {
   return box;
 }
 
+// Line icons (24x24, stroke = currentColor).
+const ICONS = {
+  help: '<circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.5-2.8 4.2"/><circle cx="12" cy="17.6" r=".6" fill="currentColor"/>',
+  stats: '<path d="M5 20V12M12 20V5M19 20v-9"/>',
+  practice: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20.5V16h-4.5"/>',
+  share: '<path d="M12 3v12"/><path d="M7.5 7.5 12 3l4.5 4.5"/><path d="M8 10.5H6a1.5 1.5 0 0 0-1.5 1.5v7.5A1.5 1.5 0 0 0 6 21h12a1.5 1.5 0 0 0 1.5-1.5V12a1.5 1.5 0 0 0-1.5-1.5h-2"/>',
+} as const;
+
+function icon(name: keyof typeof ICONS): SVGElement {
+  const wrap = document.createElement("span");
+  wrap.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+  return wrap.firstElementChild as SVGElement;
+}
+
 const app = document.getElementById("app")!;
 
 // ---------- Routing ----------
 // /            today's daily code
 // ?c=<token>   a friend's challenge (&from=<name>)
 // ?create      make a challenge
+// ?practice    random codes, as many as you like (no stats)
 
 const baseUrl = location.origin + location.pathname;
 
 function go(search: string): void {
-  history.pushState(null, "", baseUrl + search);
+  // Same screen again (e.g. practice "Play again"): replace, so Back still leaves it.
+  if (location.search === search) history.replaceState(null, "", baseUrl + search);
+  else history.pushState(null, "", baseUrl + search);
   route();
 }
 
@@ -109,6 +129,17 @@ function route(): void {
   const p = new URLSearchParams(location.search);
   if (!location.hash) window.scrollTo(0, 0);
   if (p.has("create")) return renderCreate();
+  if (p.has("practice")) {
+    return renderGame({
+      id: PRACTICE_ID,
+      secret: loadPracticeCode(),
+      maxGuesses: DAILY_GUESSES,
+      kind: "practice",
+      heading: "Practice",
+      shareTitle: "Mastermind practice",
+      shareUrl: baseUrl,
+    });
+  }
   const token = p.get("c");
   if (token !== null) {
     const ch = decodeChallenge(token);
@@ -146,18 +177,38 @@ function header(subtitle: string): HTMLElement {
     h(
       "div",
       { class: "title-block" },
-      h("h1", {}, "Mastermind"),
+      h(
+        "h1",
+        {},
+        h(
+          "a",
+          {
+            href: baseUrl,
+            title: "Today's puzzle",
+            onclick: (e: Event) => {
+              e.preventDefault();
+              go("");
+            },
+          },
+          "Mastermind",
+        ),
+      ),
       h("p", { class: "subtitle" }, subtitle),
     ),
     h(
       "nav",
       { class: "header-actions", "aria-label": "Game menu" },
-      h("button", { class: "icon-btn", "aria-label": "How to play", title: "How to play", onclick: openHelp }, "?"),
-      h("button", { class: "icon-btn", "aria-label": "Statistics", title: "Statistics", onclick: openStats }, "📊"),
+      h("button", { class: "icon-btn", "aria-label": "How to play", title: "How to play", onclick: openHelp }, icon("help")),
+      h("button", { class: "icon-btn", "aria-label": "Statistics", title: "Statistics", onclick: openStats }, icon("stats")),
       h(
         "button",
-        { class: "icon-btn", "aria-label": "Make a challenge", title: "Make a challenge", onclick: () => go("?create") },
-        "✉️",
+        { class: "icon-btn", "aria-label": "Practice", title: "Practice: play a random code", onclick: () => go("?practice") },
+        icon("practice"),
+      ),
+      h(
+        "button",
+        { class: "icon-btn", "aria-label": "Challenge a friend", title: "Challenge a friend", onclick: () => go("?create") },
+        icon("share"),
       ),
     ),
   );
@@ -214,7 +265,15 @@ function openHelp(): void {
     ),
     h("p", {}, "The pins are in no particular order, so they don't say which peg they mean. Each secret peg counts once."),
     exampleRow(["red", "red", "blue", "green"], { black: 1, white: 1 }, "If the code is Red Yellow Green Yellow: one Red is exact (black), the Green is in the wrong spot (white)."),
-    h("p", {}, "A new code every day at midnight. Share your result, or send a friend your own code with ✉️."),
+    h(
+      "p",
+      {},
+      "A new code every day at midnight. Want more? ",
+      h("span", { class: "inline-icon" }, icon("practice")),
+      " Practice plays random codes. ",
+      h("span", { class: "inline-icon" }, icon("share")),
+      " sends a friend your own code to crack.",
+    ),
     h("p", { class: "muted" }, "Keyboard: 1–4 or R/Y/G/B to add a color, Backspace to remove, Enter to guess."),
   );
 }
@@ -292,7 +351,7 @@ interface GameConfig {
   id: string;
   secret: Code;
   maxGuesses: number;
-  kind: "daily" | "challenge";
+  kind: "daily" | "challenge" | "practice";
   dayKey?: string;
   heading: string;
   shareTitle: string;
@@ -452,7 +511,23 @@ function renderGame(cfg: GameConfig): void {
       maxGuesses: cfg.maxGuesses,
       url: cfg.shareUrl,
     });
-    const shareBtn = h("button", { class: "btn btn-primary", onclick: () => shareOrCopy(text, shareBtn) }, "Share result");
+    const practice = cfg.kind === "practice";
+    const shareBtn = h(
+      "button",
+      { class: `btn ${practice ? "btn-ghost" : "btn-primary"}`, onclick: () => shareOrCopy(text, shareBtn) },
+      "Share result",
+    );
+    const practiceBtn = h(
+      "button",
+      {
+        class: `btn ${practice ? "btn-primary" : "btn-ghost"}`,
+        onclick: () => {
+          if (practice) newPracticeCode();
+          go("?practice");
+        },
+      },
+      practice ? "Play again" : "Practice",
+    );
     const countdown = h("p", { class: "countdown muted" });
     const result = h(
       "div",
@@ -462,16 +537,16 @@ function renderGame(cfg: GameConfig): void {
         { tabindex: -1 },
         won ? (guesses.length === 1 ? "First try. Unreal!" : `Cracked it in ${guesses.length}!`) : "Out of guesses",
       ),
-      h("p", { class: "muted" }, won ? "The code was" : "The secret code was"),
+      h("p", { class: "muted" }, "Answer:"),
       h("div", { class: "row-pegs reveal" }, ...cfg.secret.map((c) => peg(c))),
       h("pre", { class: "share-preview", "aria-label": "Share preview" }, text.split("\n\n").slice(0, 2).join("\n\n")),
       h(
         "div",
         { class: "actions" },
-        shareBtn,
+        ...(practice ? [practiceBtn, shareBtn] : [shareBtn, practiceBtn]),
         cfg.kind === "daily"
           ? h("button", { class: "btn btn-ghost", onclick: () => go("?create") }, "Challenge a friend")
-          : h("button", { class: "btn btn-ghost", onclick: () => go("") }, "Play today's puzzle"),
+          : h("button", { class: "btn btn-ghost", onclick: () => go("") }, "Today's puzzle"),
       ),
       cfg.kind === "daily" ? countdown : null,
     );

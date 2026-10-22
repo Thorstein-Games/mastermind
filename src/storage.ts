@@ -1,6 +1,6 @@
 // localStorage I/O. Every read and write is guarded: private windows and
 // blocked storage just mean progress isn't remembered.
-import { COLORS, type Code, isNextDay } from "./logic";
+import { COLORS, type Code, isNextDay, randomCode } from "./logic";
 
 const PREFIX = "mastermind.";
 
@@ -97,4 +97,21 @@ export function hasSeenHelp(): boolean {
 
 export function markHelpSeen(): void {
   write("seenHelp", true);
+}
+
+/** Game id for the current practice round's guesses. */
+export const PRACTICE_ID = "practice";
+
+/** The current practice code, or a new one (with no guesses) if there isn't one. */
+export function loadPracticeCode(): Code {
+  const saved = validGuesses([read<unknown>("practice.code")])[0];
+  return saved ?? newPracticeCode();
+}
+
+/** Start a new practice round: a fresh random code and no guesses. */
+export function newPracticeCode(): Code {
+  const code = randomCode();
+  write("practice.code", code);
+  saveGuesses(PRACTICE_ID, []);
+  return code;
 }

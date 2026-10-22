@@ -8,6 +8,7 @@ import {
   encodeChallenge,
   feedbackEmoji,
   isNextDay,
+  randomCode,
   puzzleNumber,
   scoreGuess,
   shareText,
@@ -145,5 +146,16 @@ describe("share text", () => {
     const text = shareText({ title: "T", feedback: [{ black: 0, white: 0 }], solved: false, maxGuesses: 12, url: "u" });
     expect(text.startsWith("T X/12")).toBe(true);
     expect(feedbackEmoji({ black: 0, white: 0 })).toBe("➖➖➖➖");
+  });
+});
+
+describe("randomCode", () => {
+  it("makes 4-peg codes from the four colors", () => {
+    for (let i = 0; i < 50; i++) {
+      const code = randomCode();
+      expect(code).toHaveLength(4);
+      for (const col of code) expect(COLORS).toContain(col);
+    }
+    expect(randomCode(() => 0.99)).toEqual(["blue", "blue", "blue", "blue"]);
   });
 });

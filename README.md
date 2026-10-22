@@ -15,6 +15,7 @@ how close you are, in no particular order:
 - **Wordle-style sharing**: the result shows only the pins, never the colors, so it doesn't spoil the code.
 - **Challenges**: set your own code and guess limit (10–15) and send a friend a link. The code is
   scrambled in the link so it can't be read off the URL.
+- **Practice**: random codes, as many rounds as you like; they don't count toward daily stats.
 - Progress, stats and streaks are kept in the browser (localStorage).
 - Keyboard: `1`–`4` or `R`/`Y`/`G`/`B`, `Backspace`, `Enter`.
 

@@ -1,13 +1,22 @@
 name: CI
 
+# Branch pushes only (a pull request shows its branch's push checks, so there's
+# no separate pull_request run). Pushes to main are tested by deploy.yml, which
+# runs the same suites before publishing, so main isn't tested twice.
 on:
   push:
-    branches: [main]
-  pull_request:
+    branches-ignore: [main]
+    paths-ignore: ["**/*.md", "scripts/**"]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,7 +26,13 @@ jobs:
       - run: npm ci
       - run: npm run verify
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      # Tests run headless, so the small headless shell is all that's needed.
+      - run: npx playwright install --with-deps --only-shell chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -26,4 +41,4 @@ jobs:
           path: |
             playwright-report
             test-results
-          retention-days: 14
+          retention-days: 7

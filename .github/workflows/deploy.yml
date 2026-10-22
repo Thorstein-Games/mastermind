@@ -3,9 +3,12 @@ name: Deploy to GitHub Pages
 # Publishes dist/ to https://thorstein-games.github.io/mastermind/, which
 # thorsteingames.com/mastermind proxies (see thorstein-games-website's _redirects).
 # One-time setup: Settings -> Pages -> Source: "GitHub Actions".
+# This is also main's CI: nothing publishes unless every test passes.
+# Docs and the share-image source (scripts/) don't change the site, so they skip it.
 on:
   push:
     branches: [main]
+    paths-ignore: ["**/*.md", "scripts/**"]
   workflow_dispatch:
 
 permissions:
@@ -20,6 +23,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,8 +33,21 @@ jobs:
       - run: npm ci
       # Nothing deploys unless every unit and browser test passes.
       - run: npm run verify
-      - run: npx playwright install --with-deps chromium
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps --only-shell chromium
       - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -39,6 +56,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

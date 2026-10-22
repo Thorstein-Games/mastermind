@@ -552,10 +552,10 @@ function renderGame(cfg: GameConfig): void {
     );
     if (cfg.kind === "daily") {
       const tick = () => {
+        if (dateKey() !== cfg.dayKey) return route(); // past midnight: today's new puzzle
         const now = new Date();
         const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         const s = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
-        if (s === 0 && dateKey() !== cfg.dayKey) return route(); // new day: new puzzle
         const pad = (n: number) => String(n).padStart(2, "0");
         countdown.textContent = `Next code in ${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
       };

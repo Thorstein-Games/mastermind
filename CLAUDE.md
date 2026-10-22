@@ -6,9 +6,17 @@ Mastermind: a single-player daily code-breaking puzzle (4 pegs, colors Red/Yello
 
 ```bash
 npm run dev      # Vite dev server
-npm run verify   # tsc --noEmit + vitest — run before committing
+npm run verify   # tsc --noEmit + vitest unit tests (~1s) — run before committing
+npm run test:e2e # Playwright: builds with .env.e2e and serves it like the proxy (~35s)
 npm run build    # typecheck + static build to dist/
 ```
+
+## Tests
+
+CI (`ci.yml`) runs both suites on every push and PR, and `deploy.yml` runs them again before publishing, so a red test blocks the deploy.
+
+- Unit (`tests/`, vitest; `vitest.config.ts` limits it to `tests/`): `logic.test.ts` covers scoring, daily codes, challenge tokens and share text, plus **frozen formats**: pinned daily codes and challenge tokens. If those fail, the change would alter codes players already solved or break links already sent. `storage.test.ts` covers saved guesses, stats and streaks (with an in-memory localStorage), practice and blocked storage.
+- E2E (`e2e/`, Playwright 1.56.1, pinned to match the sandbox's Chromium): `e2e/serve.mjs` serves `dist-e2e/` at `/mastermind` with no trailing slash, like thorsteingames.com, so relative asset paths fail. Runs on a desktop and a phone project. `helpers.ts` fixes the date (`open(page, query, { day })`, `goToDay`; browser timezone UTC, `DAY` 2026-10-22 = puzzle #2), captures shared text in `window.__shared`, and fails any test on a console error, a 4xx or a request leaving localhost. Specs: `daily` (input, pins, win/loss, share text, stats, streaks, midnight rollover), `challenge` (create, friend plays, broken links), `practice`, `site` (hosting, footer links, header buttons, 320px phones, SEO tags, share image size, FAQ JSON-LD matching the visible FAQ).
 
 ## Layout
 

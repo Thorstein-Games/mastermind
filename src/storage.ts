@@ -61,7 +61,9 @@ const EMPTY_STATS: Stats = {
 };
 
 export function loadStats(): Stats {
-  return { ...EMPTY_STATS, ...(read<Partial<Stats>>("stats") ?? {}) };
+  const saved = read<Partial<Stats>>("stats") ?? {};
+  // Fresh copy of distribution: recordDaily mutates it, and EMPTY_STATS must stay empty.
+  return { ...EMPTY_STATS, ...saved, distribution: { ...(saved.distribution ?? {}) } };
 }
 
 /** Streak to show today: a streak that missed yesterday has already ended. */

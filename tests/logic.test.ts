@@ -159,3 +159,27 @@ describe("randomCode", () => {
     expect(randomCode(() => 0.99)).toEqual(["blue", "blue", "blue", "blue"]);
   });
 });
+
+// These pin today's behaviour. If one fails, a change would alter daily codes
+// players already solved (and their shared results) or break challenge links
+// already sent. Only update them if that is truly the intent.
+describe("frozen formats (must not change between deploys)", () => {
+  it.each([
+    ["2026-10-21", ["blue", "green", "yellow", "green"]],
+    ["2026-10-22", ["blue", "red", "yellow", "green"]],
+    ["2026-12-25", ["red", "blue", "blue", "green"]],
+    ["2027-06-01", ["blue", "blue", "blue", "red"]],
+  ])("daily code for %s", (day, code) => {
+    expect(dailyCode(day)).toEqual(code);
+  });
+
+  it("decodes challenge links made by earlier versions", () => {
+    expect(decodeChallenge("1o4vu")).toEqual({ code: c("B B G B"), maxGuesses: 12 });
+    expect(decodeChallenge("0a5hu")).toEqual({ code: c("R Y G B"), maxGuesses: 10 });
+    expect(decodeChallenge("1O4VU")).toEqual({ code: c("B B G B"), maxGuesses: 12 });
+  });
+
+  it("encodes the same token for the same salt", () => {
+    expect(encodeChallenge({ code: c("B B G B"), maxGuesses: 12 }, 42)).toBe("1o4vu");
+  });
+});

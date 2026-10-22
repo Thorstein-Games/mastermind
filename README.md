@@ -25,7 +25,8 @@ how close you are, in no particular order:
 npm install
 npm run dev      # Vite dev server
 npm run verify   # typecheck + unit tests
+npm run test:e2e # browser tests (Playwright; first run: npx playwright install chromium)
 npm run build    # static site in dist/
 ```
 
-Deployed to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
+Deployed to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`, only after all unit and browser tests pass.

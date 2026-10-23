@@ -29,6 +29,9 @@ import {
   PRACTICE_ID,
   loadPracticeCode,
   newPracticeCode,
+  backfillResults,
+  mergeSaves,
+  SYNC_KEYS,
 } from "./storage";
 
 // ---------- Shared Thorstein Games bar ----------
@@ -39,6 +42,39 @@ if (TG_BAR_SRC) {
   s.src = TG_BAR_SRC;
   s.async = true;
   document.head.appendChild(s);
+}
+
+// ---------- Cloud saves ----------
+// Signed-in players' daily stats and results follow them to other devices
+// (Thorstein Games accounts, run by tg-bar.js; nothing happens without it or signed out).
+type TG = {
+  sync(o: { game: string; keys: string[]; merge: typeof mergeSaves; onUpdate?: () => void }): { save(): void };
+};
+let cloud: { save(): void } | null = null;
+/** Whether the page can be redrawn without losing a guess being entered. */
+let idle = () => true;
+function withTG(fn: (tg: TG) => void): void {
+  const tg = (window as unknown as { TG?: TG }).TG;
+  if (tg) fn(tg);
+  else window.addEventListener("tg:ready", () => withTG(fn), { once: true });
+}
+if (TG_BAR_SRC) {
+  backfillResults();
+  withTG((tg) => {
+    cloud = tg.sync({
+      game: "mastermind",
+      keys: SYNC_KEYS,
+      merge: mergeSaves,
+      // Another device's progress arrived: redraw with its stats.
+      onUpdate: () => {
+        // Only the daily page shows synced numbers; keep the scroll position.
+        if (location.search || !idle()) return;
+        const y = window.scrollY;
+        route();
+        window.scrollTo(0, y);
+      },
+    });
+  });
 }
 
 // ---------- Small DOM helpers ----------
@@ -366,6 +402,7 @@ function renderGame(cfg: GameConfig): void {
   let stopTimer: (() => void) | null = null;
   const solved = () => feedback.some(isSolved);
   const over = () => solved() || guesses.length >= cfg.maxGuesses;
+  idle = () => over() || current.every((c) => c === null);
 
   const boardEl = h("section", { class: "history", "aria-label": "Your guesses" });
   const panelEl = h("section", { class: "play-panel" });
@@ -442,7 +479,10 @@ function renderGame(cfg: GameConfig): void {
     feedback = guesses.map((x) => scoreGuess(cfg.secret, x));
     current = Array(CODE_LENGTH).fill(null);
     saveGuesses(cfg.id, guesses);
-    if (over() && cfg.kind === "daily" && cfg.dayKey) recordDaily(cfg.dayKey, solved(), guesses.length);
+    if (over() && cfg.kind === "daily" && cfg.dayKey) {
+      recordDaily(cfg.dayKey, solved(), guesses.length);
+      cloud?.save();
+    }
     refresh();
     if (over()) panelEl.querySelector<HTMLElement>(".result h2")?.focus();
   }

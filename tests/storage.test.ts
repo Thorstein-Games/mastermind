@@ -1,8 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { COLORS } from "../src/logic";
+import { COLORS, type Code, dailyCode } from "../src/logic";
 import {
   PRACTICE_ID,
+  SYNC_KEYS,
+  backfillResults,
   currentStreak,
+  loadResults,
+  mergeSaves,
   hasSeenHelp,
   loadGuesses,
   loadPracticeCode,
@@ -27,6 +31,12 @@ class MemoryStorage {
   }
   clear() {
     this.data.clear();
+  }
+  get length() {
+    return this.data.size;
+  }
+  key(i: number) {
+    return [...this.data.keys()][i] ?? null;
   }
 }
 
@@ -157,5 +167,70 @@ describe("help", () => {
     expect(hasSeenHelp()).toBe(false);
     markHelpSeen();
     expect(hasSeenHelp()).toBe(true);
+  });
+});
+
+describe("per-day results and cloud saves", () => {
+  const [STATS, RESULTS] = SYNC_KEYS;
+  const wrong = (day: string): Code => {
+    const c = dailyCode(day);
+    return c.map((x) => (x === "red" ? "blue" : "red")) as Code;
+  };
+
+  it("syncs the stats and the per-day results", () => {
+    expect(SYNC_KEYS).toEqual(["mastermind.stats", "mastermind.daily.results"]);
+  });
+
+  it("records each finished daily's result", () => {
+    recordDaily("2026-10-21", true, 4);
+    recordDaily("2026-10-22", false, 10);
+    expect(loadResults()).toEqual({ "2026-10-21": { solved: true, guesses: 4 }, "2026-10-22": { solved: false, guesses: 10 } });
+  });
+
+  it("fills in results for days finished before they were kept, from the saved guesses", () => {
+    saveGuesses("daily:2026-10-21", [wrong("2026-10-21"), dailyCode("2026-10-21")]);
+    saveGuesses("daily:2026-10-22", Array(10).fill(wrong("2026-10-22")));
+    saveGuesses("daily:2026-10-23", [wrong("2026-10-23")]); // still being played
+    saveGuesses("challenge:abcde", [dailyCode("2026-10-21")]);
+    backfillResults();
+    expect(loadResults()).toEqual({ "2026-10-21": { solved: true, guesses: 2 }, "2026-10-22": { solved: false, guesses: 10 } });
+  });
+
+  const save = (results: Record<string, [boolean, number]>, stats: Record<string, unknown> = {}) => ({
+    [RESULTS]: Object.fromEntries(Object.entries(results).map(([d, [solved, guesses]]) => [d, { solved, guesses }])),
+    [STATS]: { played: 0, wins: 0, streak: 0, bestStreak: 0, lastWinKey: null, lastPlayedKey: null, distribution: {}, ...stats },
+  });
+
+  it("joins a winning streak played on two devices", () => {
+    const phone = save({ "2026-10-21": [true, 3], "2026-10-22": [true, 5] }, { played: 2, wins: 2, streak: 2, bestStreak: 2, lastWinKey: "2026-10-22", lastPlayedKey: "2026-10-22", distribution: { 3: 1, 5: 1 } });
+    const laptop = save({ "2026-10-23": [true, 4] }, { played: 1, wins: 1, streak: 1, bestStreak: 1, lastWinKey: "2026-10-23", lastPlayedKey: "2026-10-23", distribution: { 4: 1 } });
+    const merged = mergeSaves(phone, laptop);
+    expect(merged[STATS]).toEqual({ played: 3, wins: 3, streak: 3, bestStreak: 3, lastWinKey: "2026-10-23", lastPlayedKey: "2026-10-23", distribution: { 3: 1, 4: 1, 5: 1 } });
+    expect(mergeSaves(laptop, phone)).toEqual(merged);
+    expect(mergeSaves(merged, merged)).toEqual(merged);
+  });
+
+  it("a loss after the last win ends the streak; a win on either device beats a loss that day", () => {
+    const lost = mergeSaves(save({ "2026-10-21": [true, 3] }), save({ "2026-10-22": [false, 10] }));
+    expect(lost[STATS]).toMatchObject({ streak: 0, bestStreak: 1, wins: 1, played: 2, lastPlayedKey: "2026-10-22" });
+    const both = mergeSaves(save({ "2026-10-22": [false, 10] }), save({ "2026-10-22": [true, 6] }));
+    expect((both[RESULTS] as Record<string, unknown>)["2026-10-22"]).toEqual({ solved: true, guesses: 6 });
+    expect(both[STATS]).toMatchObject({ streak: 1, played: 1, wins: 1 });
+  });
+
+  it("never lowers counts the results don't cover, and ignores damaged data", () => {
+    const old = save({}, { played: 20, wins: 18, streak: 5, bestStreak: 9, lastWinKey: "2026-10-22", lastPlayedKey: "2026-10-22", distribution: { 4: 10, 5: 8 } });
+    expect(mergeSaves(old, {})).toEqual(mergeSaves(old, old));
+    expect(mergeSaves(old, {})[STATS]).toEqual(old[STATS]);
+    const junk = { [RESULTS]: { nope: { solved: true, guesses: 2 }, "2026-10-22": { solved: "yes" } }, [STATS]: "x" };
+    expect(mergeSaves(old, junk)).toEqual(mergeSaves(old, old));
+    expect(mergeSaves({}, {})).toEqual({});
+  });
+
+  it("the merged stats load and keep counting", () => {
+    const merged = mergeSaves(save({ "2026-10-21": [true, 3] }, { played: 1, wins: 1, streak: 1, bestStreak: 1, lastWinKey: "2026-10-21", lastPlayedKey: "2026-10-21", distribution: { 3: 1 } }), save({ "2026-10-22": [true, 2] }));
+    for (const [k, v] of Object.entries(merged)) store.setItem(k, JSON.stringify(v));
+    expect(recordDaily("2026-10-23", true, 5)).toMatchObject({ played: 3, wins: 3, streak: 3, bestStreak: 3 });
+    expect(currentStreak(loadStats(), "2026-10-23")).toBe(3);
   });
 });
